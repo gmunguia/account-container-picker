@@ -41,6 +41,9 @@ type createProperties = {
 [@bs.val] [@bs.scope ("browser", "omnibox")]
 external setDefaultSuggestion: defaultSuggestion => unit = "";
 
+[@bs.val] [@bs.scope ("browser", "omnibox", "onInputStarted")]
+external onInputStarted: (unit => unit) => unit = "addListener";
+
 [@bs.val] [@bs.scope ("browser", "omnibox", "onInputChanged")]
 external onInputChanged:
   ((string, (. array(suggestion)) => unit) => unit) => unit =
@@ -57,16 +60,25 @@ external queryIdentities:
 [@bs.val] [@bs.scope ("browser", "tabs")]
 external createTab: createProperties => Js.Promise.t(unit) = "create";
 
-setDefaultSuggestion(
-  defaultSuggestion(~description="Test omnibox suggestion"),
+let getIdentities: unit => Js.Promise.t(array(contextualIdentity)) =
+  () => {
+    queryIdentities(Js.Dict.empty());
+  };
+
+onInputStarted(() =>
+  getIdentities()
+  |> Js.Promise.then_(ids => Js.Promise.resolve(Array.map(nameGet, ids)))
+  |> Js.Promise.then_(ids =>
+       Js.Promise.resolve(Array.fold_left((a, b) => a ++ " " ++ b, "", ids))
+     )
+  |> Js.Promise.then_(ids => {
+       setDefaultSuggestion(defaultSuggestion(~description=ids));
+       Js.Promise.resolve();
+     })
+  |> ignore
 );
 
-onInputChanged((input, suggest) => {
-  let getIdentities: unit => Js.Promise.t(array(contextualIdentity)) =
-    () => {
-      queryIdentities(Js.Dict.empty());
-    };
-
+onInputChanged((input, suggest) =>
   getIdentities()
   |> Js.Promise.then_(identities => {
        let suggestions =
@@ -87,12 +99,10 @@ onInputChanged((input, suggest) => {
   |> Js.Promise.catch(error => {
        Js.log2("Couldn't make suggestions:", error);
        Js.Promise.resolve();
-     });
+     })
+  |> ignore
+);
 
-  ();
-});
-
-onInputEntered((input, disposition) => {
-  createTab(createProperties(~cookieStoreId=input, ()));
-  ();
-});
+onInputEntered((input, disposition) =>
+  createTab(createProperties(~cookieStoreId=input, ())) |> ignore
+);
