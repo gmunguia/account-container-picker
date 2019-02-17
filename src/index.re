@@ -67,9 +67,10 @@ let getIdentities: unit => Js.Promise.t(array(contextualIdentity)) =
 
 onInputStarted(() =>
   getIdentities()
-  |> Js.Promise.then_(ids => Js.Promise.resolve(Array.map(nameGet, ids)))
+  |> Js.Promise.then_(ids => Array.map(nameGet, ids) |> Js.Promise.resolve)
   |> Js.Promise.then_(ids =>
-       Js.Promise.resolve(Array.fold_left((a, b) => a ++ " " ++ b, "", ids))
+       Array.fold_left((a, b) => a ++ " " ++ b, "", ids)
+       |> Js.Promise.resolve
      )
   |> Js.Promise.then_(ids => {
        setDefaultSuggestion(defaultSuggestion(~description=ids));
@@ -80,18 +81,17 @@ onInputStarted(() =>
 
 onInputChanged((input, suggest) =>
   getIdentities()
-  |> Js.Promise.then_(identities => {
-       let suggestions =
-         Array.map(
-           identity =>
-             suggestion(
-               ~description=nameGet(identity),
-               ~content=idGet(identity),
-             ),
-           identities,
-         );
-       Js.Promise.resolve(suggestions);
-     })
+  |> Js.Promise.then_(identities =>
+       Array.map(
+         identity =>
+           suggestion(
+             ~description=nameGet(identity),
+             ~content=idGet(identity),
+           ),
+         identities,
+       )
+       |> Js.Promise.resolve
+     )
   |> Js.Promise.then_(suggestions => {
        suggest(. suggestions);
        Js.Promise.resolve();
@@ -104,5 +104,5 @@ onInputChanged((input, suggest) =>
 );
 
 onInputEntered((input, disposition) =>
-  createTab(createProperties(~cookieStoreId=input, ())) |> ignore
+  createProperties(~cookieStoreId=input, ()) |> createTab |> ignore
 );
