@@ -65,6 +65,18 @@ let getIdentities: unit => Js.Promise.t(array(contextualIdentity)) =
     queryIdentities(Js.Dict.empty());
   };
 
+let rec stringContains: (string, string) => bool =
+  (sub, super) =>
+    if (String.length(sub) === 0) {
+      true;
+    } else if (String.length(super) < String.length(sub)) {
+      false;
+    } else {
+      String.sub(super, 0, String.length(sub)) == sub ?
+        true :
+        stringContains(sub, String.sub(super, 1, String.length(super) - 1));
+    };
+
 onInputStarted(() =>
   getIdentities()
   |> Js.Promise.then_(ids => Array.map(nameGet, ids) |> Js.Promise.resolve)
@@ -81,6 +93,18 @@ onInputStarted(() =>
 
 onInputChanged((input, suggest) =>
   getIdentities()
+  |> Js.Promise.then_(identities =>
+       Array.to_list(identities)
+       |> List.filter(identity => {
+            let name = nameGet(identity) |> String.lowercase;
+            let lowercaseInput = String.lowercase(input);
+
+            stringContains(name, lowercaseInput)
+            || stringContains(lowercaseInput, name);
+          })
+       |> Array.of_list
+       |> Js.Promise.resolve
+     )
   |> Js.Promise.then_(identities =>
        Array.map(
          identity =>
