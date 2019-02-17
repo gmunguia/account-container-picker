@@ -1,15 +1,17 @@
 {
   "name": "account-container-picker",
   "version": "0.1.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "source": "lib/es6/src/index.bs.js",
   "license": "MIT",
   "scripts": {
     "clean": "bsb -clean-world",
-    "build": "bsb -make-world",
-    "start": "bsb -make-world -w & web-ext run"
+    "build": "bsb -make-world && microbundle build -f cjs",
+    "start": "bsb -make-world -w & microbundle watch -f cjs & web-ext run"
   },
   "devDependencies": {
     "bs-platform": "^4.0.18",
+    "microbundle": "^0.9.0",
     "web-ext": "^2.9.3"
   }
 }

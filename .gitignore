@@ -85,3 +85,6 @@ typings/
 # bsb output
 lib/
 .merlin
+
+# microbundle output
+dist/

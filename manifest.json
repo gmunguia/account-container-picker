@@ -5,10 +5,10 @@
   "version": "0.1.0",
   "background": {
     "scripts": [
-      "lib/js/src/background.bs.js"
+      "dist/index.js"
     ]
   },
-  "omnibox": { "keyword" : "@" },
+  "omnibox": { "keyword" : "&" },
   "permissions": [
     "contextualIdentities",
     "cookies"
