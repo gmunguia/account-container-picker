@@ -7,10 +7,13 @@
   "scripts": {
     "clean": "bsb -clean-world",
     "build": "bsb -make-world && microbundle build -f cjs",
-    "start": "bsb -make-world -w & microbundle watch -f cjs & web-ext run"
+    "watch:bsb": "bsb -make-world -w",
+    "watch:microbundle": "microbundle watch -f cjs",
+    "start": "concurrently --kill-others \"yarn watch:bsb\" \"yarn watch:microbundle\" \"web-ext run\""
   },
   "devDependencies": {
-    "bs-platform": "^4.0.18",
+    "bs-platform": "^5.0.0",
+    "concurrently": "^4.1.0",
     "microbundle": "^0.9.0",
     "web-ext": "^2.9.3"
   }
