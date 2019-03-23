@@ -77,19 +77,30 @@ let rec stringContains: (string, string) => bool =
         stringContains(sub, String.sub(super, 1, String.length(super) - 1));
     };
 
-onInputStarted(() =>
-  getIdentities()
-  |> Js.Promise.then_(ids => Array.map(nameGet, ids) |> Js.Promise.resolve)
-  |> Js.Promise.then_(ids =>
-       Array.fold_left((a, b) => a ++ " " ++ b, "", ids)
-       |> Js.Promise.resolve
-     )
-  |> Js.Promise.then_(ids => {
-       setDefaultSuggestion(defaultSuggestion(~description=ids));
-       Js.Promise.resolve();
-     })
-  |> ignore
-);
+let arrayTail: array('a) => array('a) =
+  xs => Array.sub(xs, 1, Array.length(xs) - 1);
+
+let joinStrings: (string, array(string)) => string =
+  (separator, substrings) =>
+    switch (substrings) {
+    | [||] => ""
+    | [|x|] => x
+    | xs =>
+      xs[0]
+      ++ Array.fold_left((a, b) => a ++ separator ++ b, "", arrayTail(xs))
+    };
+
+getIdentities()
+|> Js.Promise.then_(ids => Array.map(nameGet, ids) |> Js.Promise.resolve)
+|> Js.Promise.then_(ids => ids |> joinStrings(", ") |> Js.Promise.resolve)
+|> Js.Promise.then_(ids =>
+     "Available containers: " ++ ids |> Js.Promise.resolve
+   )
+|> Js.Promise.then_(description => {
+     setDefaultSuggestion(defaultSuggestion(~description));
+     Js.Promise.resolve();
+   })
+|> ignore;
 
 onInputChanged((input, suggest) =>
   getIdentities()
@@ -127,6 +138,6 @@ onInputChanged((input, suggest) =>
   |> ignore
 );
 
-onInputEntered((input, disposition) =>
+onInputEntered((input, _) =>
   createProperties(~cookieStoreId=input, ()) |> createTab |> ignore
 );
