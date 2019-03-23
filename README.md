@@ -11,3 +11,7 @@ WIP. Not published yet.
 ## Usage
 
 In omnibox, type "&", followed by a space, to start searching available account containers.
+
+## Development
+
+To build from source, install dependencies with `yarn` and run `yarn build`. Build artifacts are stored in `web-ext-artifacts`.
