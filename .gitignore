@@ -88,3 +88,6 @@ lib/
 
 # microbundle output
 dist/
+
+# extension bundle
+web-ext-artifacts/

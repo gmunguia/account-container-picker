@@ -5,8 +5,7 @@
   "source": "lib/es6/src/index.bs.js",
   "license": "MIT",
   "scripts": {
-    "clean": "bsb -clean-world",
-    "build": "bsb -make-world && microbundle build -f cjs",
+    "build": "bsb -make-world && microbundle build -f cjs && web-ext build",
     "watch:bsb": "bsb -make-world -w",
     "watch:microbundle": "microbundle watch -f cjs",
     "start": "concurrently --kill-others \"yarn watch:bsb\" \"yarn watch:microbundle\" \"web-ext run\""
