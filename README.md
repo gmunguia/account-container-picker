@@ -14,4 +14,4 @@ In omnibox, type "&", followed by a space, to start searching available account 
 
 ## Development
 
-To build from source, install dependencies with `yarn` and run `yarn build`. Build artifacts are stored in `web-ext-artifacts`.
+To build from source, install dependencies with `yarn` and run `yarn build`. Build artifacts are stored in `web-ext-artifacts`. See `package.json` for build dependencies. Tested on `macOS Mojave 10.14.3`, running `yarn 1.13.0` and `node 10.15.0`.
