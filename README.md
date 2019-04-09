@@ -6,7 +6,7 @@ Firefox extension. Lets you choose an account container from omnibox and opens a
 
 ## Installation
 
-WIP. Not published yet.
+Visit [the extension page](https://addons.mozilla.org/en-US/firefox/addon/account-container-picker/) to add it to Firefox.
 
 ## Usage
 
